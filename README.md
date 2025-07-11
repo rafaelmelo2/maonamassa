@@ -1,12 +1,55 @@
-# 🚀 **MãoNaMassa – Estrutura Completa do MVP**
+# 🚀 **MãoNaMassa – Plataforma Completa**
 
 > **Missão**  
 > Conectar **profissionais autônomos** a **clientes** em Catalão-GO (e além), garantindo **experiência intuitiva**, **contratação rápida** e **plena escalabilidade**.
 
----
+## 🎯 Sobre o Projeto
+Plataforma completa desenvolvida em **monorepo** para conectar profissionais autônomos (eletricistas, costureiras, personal trainers…) a clientes de **18 a 60+ anos**, com navegação simples, contratos claros e pagamento seguro.
 
-## 🎯 Objetivo
-Conectar profissionais autônomos (eletricistas, costureiras, personal trainers…) a clientes de **18 a 60+ anos**, com navegação simples, contratos claros e pagamento seguro.
+### 🏗️ Arquitetura
+- **Backend**: Node.js + TypeScript + Express (Clean Architecture)
+- **Frontend**: React + TypeScript + Vite (PWA)
+- **Banco de Dados**: PostgreSQL + Redis
+- **Busca**: Elasticsearch
+- **Monitoramento**: Prometheus + Grafana
+- **Containerização**: Docker + Docker Compose
+
+### 🚀 Começando
+
+#### 📋 Pré-requisitos
+- Node.js 18+
+- npm 9+
+- Docker & Docker Compose (opcional)
+
+#### 🔧 Instalação Rápida
+```bash
+# Clonar o repositório
+git clone https://github.com/seu-usuario/maonamassa.git
+cd maonamassa
+
+# Instalar todas as dependências
+npm run setup
+
+# Copiar arquivo de ambiente
+cp env.example .env
+
+# Subir banco de dados
+docker-compose up postgres redis -d
+
+# Rodar em desenvolvimento
+npm run dev
+```
+
+#### 🐳 Com Docker (Recomendado)
+```bash
+# Ambiente completo
+docker-compose --profile full-stack up -d
+
+# Com monitoramento
+docker-compose --profile monitoring up -d
+```
+
+### 📂 Estrutura do Projeto
 
 ---
 

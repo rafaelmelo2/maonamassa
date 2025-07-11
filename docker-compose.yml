@@ -1,0 +1,170 @@
+version: '3.8'
+
+services:
+  # 🗄️ Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: maonamassa-postgres
+    environment:
+      POSTGRES_DB: maonamassa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - maonamassa-network
+
+  # 🔄 Redis para Cache
+  redis:
+    image: redis:7-alpine
+    container_name: maonamassa-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - maonamassa-network
+
+  # 🔍 Elasticsearch para Busca
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: maonamassa-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - maonamassa-network
+
+  # 🎯 Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: maonamassa-backend
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=maonamassa
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - REDIS_URL=redis://redis:6379
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - maonamassa-network
+    profiles:
+      - full-stack
+
+  # 🖥️ Frontend Web
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: maonamassa-frontend
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - maonamassa-network
+    profiles:
+      - full-stack
+
+  # 📊 Monitoramento - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: maonamassa-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - maonamassa-network
+    profiles:
+      - monitoring
+
+  # 📈 Monitoramento - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: maonamassa-grafana
+    ports:
+      - "3002:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - maonamassa-network
+    profiles:
+      - monitoring
+
+  # 📧 MailHog para testes de email
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: maonamassa-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - maonamassa-network
+    profiles:
+      - development
+
+volumes:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  maonamassa-network:
+    driver: bridge 

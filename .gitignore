@@ -1,0 +1,124 @@
+# 📁 Dependências
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 🔒 Variáveis de Ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 🏗️ Build
+dist/
+build/
+*.tsbuildinfo
+
+# 📊 Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 🗄️ Base de Dados
+*.db
+*.sqlite
+*.sqlite3
+data/
+database/
+
+# 🔄 Cache
+.cache/
+.npm/
+.yarn/
+.pnpm/
+
+# 🧪 Testes
+coverage/
+.nyc_output/
+junit.xml
+test-results/
+
+# 🖥️ IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 📱 React Native
+.expo/
+.expo-shared/
+
+# 🔐 Certificados
+certificates/
+*.pem
+*.key
+*.crt
+*.p12
+
+# 🌐 Arquivos temporários
+.tmp/
+temp/
+tmp/
+
+# 🖼️ Uploads
+uploads/
+public/uploads/
+
+# 📦 Docker
+.dockerignore
+docker-compose.override.yml
+
+# 🗂️ Sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 📄 Documentos gerados
+generated/
+docs/generated/
+
+# 🏛️ Backups
+*.bak
+*.backup
+*.sql.gz
+
+# 🔧 Ferramentas
+.eslintcache
+.sass-cache/
+.grunt/
+.bower_components/
+
+# 📈 Monitoramento
+logs/
+metrics/
+prometheus/data/
+grafana/data/
+
+# 🧹 Limpeza
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+
+# 🎯 Específico do projeto
+/backend/uploads/
+/frontend/dist/
+/shared/dist/
+/database/
+/certificates/
+/monitoring/data/ 
